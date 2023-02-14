@@ -2,8 +2,8 @@
 const game = (function () {
   // game board [3][3]
   let gameboard = [
-    ['', '', ''],
-    ['', '', ''],
+    ['X', 'O', 'X'],
+    ['X', 'O', 'O'],
     ['', '', ''],
   ];
   // gameboard.length = 9;
@@ -83,11 +83,11 @@ const game = (function () {
   // play move
   function playMove(event) {
     if (event.target.textContent === '') {
-      console.log(event.target.dataset.index);
+      // console.log(event.target.dataset.index);
       gameboard[event.target.dataset.index[0]][event.target.dataset.index[1]] =
         currentPlayer.mark;
       render();
-      console.table(gameboard);
+      // console.table(gameboard);
       checkResult(gameboard);
       getNextToPlay();
       if (winner === '') {
@@ -96,22 +96,135 @@ const game = (function () {
     }
   }
 
-  // ai plays move
+  // since array only shallow copy I have to create a deep copy clone
+  function cloneArray(array) {
+    return array.map((item) => (Array.isArray(item) ? cloneArray(item) : item));
+  }
+
+  // ai plays best move with minimax
   function aiPlay() {
-    exit_loops: for (let i = 0; i < 3; i++) {
+    let copyGameboard = cloneArray(gameboard);
+    // console.table(copyGameboard);
+    // track best score - set it to worst possible score of infinity since we're minimising
+    let bestScore = Infinity;
+    let bestMove;
+    console.log(`bestMove is currently = ${bestMove}`);
+    // loop through board
+    for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
-        if (gameboard[i][j] === '') {
-          gameboard[i][j] = 'O';
-          break exit_loops;
+        // if spot is available
+        if (copyGameboard[i][j] === '') {
+          copyGameboard[i][j] = 'O';
+          let score = minimax(copyGameboard, 0, false);
+          console.log(score);
+          // copyGameboard[i][j] = '';
+          if (score < bestScore) {
+            bestScore = score;
+            console.log('new best move');
+            // BEST MOVE IS ONLY SET ONCE!!!!!!!!!! NEED TO BE SET ON EVERY BEST SCORE
+            bestMove = { i, j };
+            console.log(bestMove);
+          }
         }
       }
     }
 
+    // play best move
+    console.log(bestMove);
+    gameboard[bestMove.i][bestMove.j] = 'O';
+    winner = '';
     render();
-    console.table(gameboard);
+    // console.table(gameboard);
     checkResult(gameboard);
     getNextToPlay();
   }
+
+  function minimax(board, depth, isMaximising) {
+    let scores = {
+      X: 1,
+      O: -1,
+      tie: 0,
+    };
+
+    let result = checkWinner(board);
+    // console.log(result);
+    if (result !== null) {
+      console.log(scores[result]);
+      return scores[result];
+    }
+
+    if (isMaximising) {
+      let bestScore = -Infinity;
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          if (board[i][j] === '') {
+            board[i][j] = 'X';
+            let score = minimax(board, depth + 1, false);
+            // board[i][j] = '';
+            bestScore = Math.max(score, bestScore);
+          }
+        }
+      }
+      console.log(bestScore);
+      return bestScore;
+    } else {
+      let bestScore = Infinity;
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          if (board[i][j] === '') {
+            board[i][j] = 'O';
+            let score = minimax(board, depth + 1, true);
+            // board[i][j] = '';
+            bestScore = Math.min(score, bestScore);
+            console.log(bestScore);
+          }
+        }
+      }
+      return bestScore;
+    }
+  }
+
+  // add check winner for minimax
+  function checkWinner(board) {
+    checkRows(board);
+    checkColumns(board);
+    checkDiagonals(board);
+
+    if (winner !== '') {
+      return winner.mark;
+    } else if (
+      winner === '' &&
+      board.map((arr) => arr.join('')).join('').length === 9
+    ) {
+      return 'tie';
+    } else {
+      return null;
+    }
+  }
+
+  // ai plays move in next available space
+  // function aiPlayNextAvailable() {
+  //   // is it better to break out of a nested for loop with labels or
+  //   // just return
+  //   exit_loops: for (let i = 0; i < 3; i++) {
+  //     for (let j = 0; j < 3; j++) {
+  //       if (gameboard[i][j] === '') {
+  //         gameboard[i][j] = 'O';
+  //         render();
+  //         console.table(gameboard);
+  //         checkResult(gameboard);
+  //         getNextToPlay();
+  //         return;
+  //         // break exit_loops;
+  //       }
+  //     }
+  //   }
+
+  //   // render();
+  //   // console.table(gameboard);
+  //   // checkResult(gameboard);
+  //   // getNextToPlay();
+  // }
 
   // get columns, rows and diagonals
   function checkRows(gameboard) {
@@ -123,11 +236,11 @@ const game = (function () {
     let row3 = gameboard[2].join('');
 
     if (row1 === 'XXX' || row2 === 'XXX' || row3 === 'XXX') {
-      winner = player1.name;
-      console.log(`row winner: ${winner}`);
+      winner = player1;
+      console.log(`row winner: ${winner.mark}`);
     } else if (row1 === 'OOO' || row2 === 'OOO' || row3 === 'OOO') {
-      winner = player2.name;
-      console.log(`row winner: ${winner}`);
+      winner = player2;
+      console.log(`row winner: ${winner.mark}`);
     }
   }
 
@@ -137,11 +250,11 @@ const game = (function () {
     let col3 = gameboard[0][2] + gameboard[1][2] + gameboard[2][2];
 
     if (col1 === 'XXX' || col2 === 'XXX' || col3 === 'XXX') {
-      winner = player1.name;
-      console.log(`column winner: ${winner}`);
+      winner = player1;
+      console.log(`column winner: ${winner.mark}`);
     } else if (col1 === 'OOO' || col2 === 'OOO' || col3 === 'OOO') {
-      winner = player2.name;
-      console.log(`column winner: ${winner}`);
+      winner = player2;
+      console.log(`column winner: ${winner.mark}`);
     }
   }
 
@@ -150,11 +263,11 @@ const game = (function () {
     let diag2 = gameboard[2][0] + gameboard[1][1] + gameboard[0][2];
 
     if (diag1 === 'XXX' || diag2 === 'XXX') {
-      winner = player1.name;
-      console.log(`diagonal winner: ${winner}`);
+      winner = player1;
+      console.log(`diagonal winner: ${winner.mark}`);
     } else if (diag1 === 'OOO' || diag2 === 'OOO') {
-      winner = player2.name;
-      console.log(`diagonal winner: ${winner}`);
+      winner = player2;
+      console.log(`diagonal winner: ${winner.mark}`);
     }
   }
 
@@ -164,7 +277,7 @@ const game = (function () {
     checkDiagonals(gameboard);
 
     if (winner !== '') {
-      result.textContent = `The winner is ${winner}`;
+      result.textContent = `The winner is ${winner.name}`;
       grid.removeEventListener('click', playMove);
     } else if (
       winner === '' &&
