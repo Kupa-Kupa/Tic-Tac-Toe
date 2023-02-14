@@ -10,13 +10,36 @@ const game = (function () {
   const Player = (mark, move) => {
     mark = mark;
     move = move;
+    let name = mark;
 
-    return { mark, move };
+    return { mark, move, name };
   };
 
   const player1 = Player('X', 'first');
   const player2 = Player('O', 'second');
   let currentPlayer = player1;
+
+  // Get player names
+  let playerInfo = document.querySelector('.player-info');
+  playerInfo.addEventListener('change', getPlayerNames);
+
+  function getPlayerNames(event) {
+    console.log(event.target.value);
+    console.log(event.target.id);
+    if (event.target.id === 'x-name') {
+      if (event.target.value === '') {
+        player1.name = player1.mark;
+      } else {
+        player1.name = event.target.value;
+      }
+    } else if (event.target.id === 'o-name') {
+      if (event.target.value === '') {
+        player2.name = player2.mark;
+      } else {
+        player2.name = event.target.value;
+      }
+    }
+  }
 
   // Get next player to play
   function getNextToPlay() {
@@ -68,10 +91,10 @@ const game = (function () {
     let row3 = gameboard[6] + gameboard[7] + gameboard[8];
 
     if (row1 === 'XXX' || row2 === 'XXX' || row3 === 'XXX') {
-      winner = 'X';
+      winner = player1.name;
       console.log(`row winner: ${winner}`);
     } else if (row1 === 'OOO' || row2 === 'OOO' || row3 === 'OOO') {
-      winner = 'O';
+      winner = player2.name;
       console.log(`row winner: ${winner}`);
     }
   }
@@ -82,10 +105,10 @@ const game = (function () {
     let col3 = gameboard[2] + gameboard[5] + gameboard[8];
 
     if (col1 === 'XXX' || col2 === 'XXX' || col3 === 'XXX') {
-      winner = 'X';
+      winner = player1.name;
       console.log(`column winner: ${winner}`);
     } else if (col1 === 'OOO' || col2 === 'OOO' || col3 === 'OOO') {
-      winner = 'O';
+      winner = player2.name;
       console.log(`column winner: ${winner}`);
     }
   }
@@ -95,10 +118,10 @@ const game = (function () {
     let diag2 = gameboard[2] + gameboard[4] + gameboard[6];
 
     if (diag1 === 'XXX' || diag2 === 'XXX') {
-      winner = 'X';
+      winner = player1.name;
       console.log(`diagonal winner: ${winner}`);
     } else if (diag1 === 'OOO' || diag2 === 'OOO') {
-      winner = 'O';
+      winner = player2.name;
       console.log(`diagonal winner: ${winner}`);
     }
   }

@@ -34,6 +34,22 @@ header > h1 {
   text-align: center;
 }
 
+.player-info label {
+  font-size: 1.1rem;
+  margin-right: 5px;
+}
+
+.player-info input[type='text'] {
+  font-size: 1.1rem;
+  border: none;
+  max-width: 130px;
+  padding: 2px 4px;
+}
+
+.player-info h2 {
+  margin-bottom: 8px;
+}
+
 .x-info {
   justify-self: start;
 }
