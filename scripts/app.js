@@ -1,8 +1,12 @@
 // game object module pattern
 const game = (function () {
-  // game board
-  let gameboard = [];
-  gameboard.length = 9;
+  // game board [3][3]
+  let gameboard = [
+    ['', '', ''],
+    ['', '', ''],
+    ['', '', ''],
+  ];
+  // gameboard.length = 9;
 
   let winner = '';
 
@@ -61,14 +65,18 @@ const game = (function () {
   let restart = document.querySelector('#restart');
   restart.addEventListener('click', restartGame);
 
-  // render gameboard array on screen
+  // render gameboard [3][3] on screen
   render();
 
   function render() {
-    for (let i = 0; i < squares.length; i++) {
-      //   console.log(squares[i]);
-      //   console.log(gameboard[i]);
-      squares[i].textContent = gameboard[i];
+    let squareCounter = 0;
+    // loop through each items of the 3 arrays within the gameboard array
+    // increment the square counter so it hits correct element on page
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        squares[squareCounter].textContent = gameboard[i][j];
+        squareCounter++;
+      }
     }
   }
 
@@ -76,7 +84,8 @@ const game = (function () {
   function playMove(event) {
     if (event.target.textContent === '') {
       console.log(event.target.dataset.index);
-      gameboard[event.target.dataset.index] = currentPlayer.mark;
+      gameboard[event.target.dataset.index[0]][event.target.dataset.index[1]] =
+        currentPlayer.mark;
       render();
       getNextToPlay();
       console.table(gameboard);
@@ -86,9 +95,12 @@ const game = (function () {
 
   // get columns, rows and diagonals
   function checkRows(gameboard) {
-    let row1 = gameboard[0] + gameboard[1] + gameboard[2];
-    let row2 = gameboard[3] + gameboard[4] + gameboard[5];
-    let row3 = gameboard[6] + gameboard[7] + gameboard[8];
+    // let row1 = gameboard[0][0] + gameboard[0][1] + gameboard[0][2];
+    // let row2 = gameboard[1][0] + gameboard[1][1] + gameboard[1][2];
+    // let row3 = gameboard[2][0] + gameboard[2][1] + gameboard[2][2];
+    let row1 = gameboard[0].join('');
+    let row2 = gameboard[1].join('');
+    let row3 = gameboard[2].join('');
 
     if (row1 === 'XXX' || row2 === 'XXX' || row3 === 'XXX') {
       winner = player1.name;
@@ -100,9 +112,9 @@ const game = (function () {
   }
 
   function checkColumns(gameboard) {
-    let col1 = gameboard[0] + gameboard[3] + gameboard[6];
-    let col2 = gameboard[1] + gameboard[4] + gameboard[7];
-    let col3 = gameboard[2] + gameboard[5] + gameboard[8];
+    let col1 = gameboard[0][0] + gameboard[1][0] + gameboard[2][0];
+    let col2 = gameboard[0][1] + gameboard[1][1] + gameboard[2][1];
+    let col3 = gameboard[0][2] + gameboard[1][2] + gameboard[2][2];
 
     if (col1 === 'XXX' || col2 === 'XXX' || col3 === 'XXX') {
       winner = player1.name;
@@ -114,8 +126,8 @@ const game = (function () {
   }
 
   function checkDiagonals(gameboard) {
-    let diag1 = gameboard[0] + gameboard[4] + gameboard[8];
-    let diag2 = gameboard[2] + gameboard[4] + gameboard[6];
+    let diag1 = gameboard[0][0] + gameboard[1][1] + gameboard[2][2];
+    let diag2 = gameboard[2][0] + gameboard[1][1] + gameboard[0][2];
 
     if (diag1 === 'XXX' || diag2 === 'XXX') {
       winner = player1.name;
@@ -134,18 +146,21 @@ const game = (function () {
     if (winner !== '') {
       result.textContent = `The winner is ${winner}`;
       grid.removeEventListener('click', playMove);
-    } else if (winner === '' && gameboard.join('').length === 9) {
+    } else if (
+      winner === '' &&
+      gameboard.map((arr) => arr.join('')).join('').length === 9
+    ) {
       result.textContent = `It's a draw...`;
       grid.removeEventListener('click', playMove);
     }
   }
 
   function restartGame() {
-    // for (let i = 0; i < gameboard.length; i++) {
-    //   gameboard[i] = '';
-    // }
-
-    gameboard = [];
+    gameboard = [
+      ['', '', ''],
+      ['', '', ''],
+      ['', '', ''],
+    ];
     render();
     result.textContent = '';
     grid.removeEventListener('click', playMove);
