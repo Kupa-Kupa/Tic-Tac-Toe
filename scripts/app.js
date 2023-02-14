@@ -87,10 +87,30 @@ const game = (function () {
       gameboard[event.target.dataset.index[0]][event.target.dataset.index[1]] =
         currentPlayer.mark;
       render();
-      getNextToPlay();
       console.table(gameboard);
       checkResult(gameboard);
+      getNextToPlay();
+      if (winner === '') {
+        aiPlay();
+      }
     }
+  }
+
+  // ai plays move
+  function aiPlay() {
+    exit_loops: for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (gameboard[i][j] === '') {
+          gameboard[i][j] = 'O';
+          break exit_loops;
+        }
+      }
+    }
+
+    render();
+    console.table(gameboard);
+    checkResult(gameboard);
+    getNextToPlay();
   }
 
   // get columns, rows and diagonals
