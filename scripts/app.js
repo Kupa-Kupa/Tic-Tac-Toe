@@ -101,6 +101,9 @@ const game = (function () {
     // get copy of current board state
     let copyGameboard = cloneArray(gameboard);
 
+    // call minimax
+    minimax(copyGameboard, player2, 0);
+
     /*  set winner back to '' so that it doesn't end game for no reason 
         based on what the minimax was looking at down the tree */
     // winner = '';
@@ -116,17 +119,88 @@ const game = (function () {
   }
 
   // find best available move with minimax algorithm
-  function minimax(board, player) {
-    // let scores = {
-    //   X: 1,
-    //   O: -1,
-    //   tie: 0,
-    // };
+  function minimax(board, player, depth) {
     // 1) return value if terminal state is found
+    //check if there is a winner
+    if (checkWinner(board) === 'X') {
+      return { score: 10 };
+    } else if (checkWinner(board) === 'O') {
+      return { score: -10 };
+    } else if (checkWinner(board) === 'tie') {
+      return { score: 0 };
+    }
+
     // 2) Loop through available spots on the board
+    // get an array of available moves
+    let availableMoves = [];
+    // check available squares and push them into array
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (board[i][j] === '') {
+          availableMoves.push(`${i}${j}`);
+        }
+      }
+    }
+
+    console.table(availableMoves);
+
     // 3) call the minimax function on each available spot recursively
+    // array to collect information on each move in an object
+    let moves = [];
+
+    for (let i = 0; i < availableMoves.length; i++) {
+      let move = {};
+
+      move.index = board[availableMoves[i][0]][availableMoves[i][1]];
+      // console.log(availableMoves[i]);
+      // console.log(availableMoves[i][0]);
+      // console.log(availableMoves[i][1]);
+      // console.log(board[availableMoves[i][0]][availableMoves[i][1]]);
+      // console.log(move.index);
+
+      // place mark for current player on square
+      board[availableMoves[i][0]][availableMoves[i][1]] = player.mark;
+
+      // collect score result from calling minimax
+      if (player === player1) {
+        let result = minimax(board, player2, depth + 1);
+        move.score = result.score;
+      } else {
+        let result = minimax(board, player1, depth + 1);
+        move.score = result.score;
+      }
+
+      // reset square to empty
+      board[availableMoves[i][0]][availableMoves[i][1]] = move.index;
+
+      // push object to moves array
+      moves.push(move);
+    }
+
     // 4) evaluate returning values from function calls
+    let bestMove;
+
+    if (player === player1) {
+      let bestScore = -Infinity;
+      for (let i = 0; i < moves.length; i++) {
+        if (moves[i].score > bestScore) {
+          bestScore = moves[i].score;
+          bestMove = i;
+        }
+      }
+    } else {
+      let bestScore = Infinity;
+      for (let i = 0; i < moves.length; i++) {
+        if (moves[i].score < bestScore) {
+          bestScore = moves[i].score;
+          bestMove = i;
+        }
+      }
+    }
+
     // 5) return the best value
+
+    return moves[bestMove];
   }
 
   // since array only shallow copy I have to create a deep copy clone
