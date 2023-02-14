@@ -2,15 +2,14 @@
 const game = (function () {
   // game board [3][3]
   let gameboard = [
-    ['X', 'O', 'X'],
-    ['X', 'O', 'O'],
+    ['', '', ''],
+    ['', '', ''],
     ['', '', ''],
   ];
-  // gameboard.length = 9;
 
   let winner = '';
 
-  //players have mark x or o and move first or second
+  //players have mark X or O and move first or second
   const Player = (mark, move) => {
     mark = mark;
     move = move;
@@ -90,10 +89,44 @@ const game = (function () {
       // console.table(gameboard);
       checkResult(gameboard);
       getNextToPlay();
+      //after player move if there is no winner then play ai move
       if (winner === '') {
         aiPlay();
       }
     }
+  }
+
+  // ai plays best move with minimax
+  function aiPlay() {
+    // get copy of current board state
+    let copyGameboard = cloneArray(gameboard);
+
+    /*  set winner back to '' so that it doesn't end game for no reason 
+        based on what the minimax was looking at down the tree */
+    // winner = '';
+
+    // render the ai's move
+    render();
+
+    // check if game now has a winner
+    checkResult(gameboard);
+
+    // get the next player to play
+    getNextToPlay();
+  }
+
+  // find best available move with minimax algorithm
+  function minimax(board, player) {
+    // let scores = {
+    //   X: 1,
+    //   O: -1,
+    //   tie: 0,
+    // };
+    // 1) return value if terminal state is found
+    // 2) Loop through available spots on the board
+    // 3) call the minimax function on each available spot recursively
+    // 4) evaluate returning values from function calls
+    // 5) return the best value
   }
 
   // since array only shallow copy I have to create a deep copy clone
@@ -101,90 +134,7 @@ const game = (function () {
     return array.map((item) => (Array.isArray(item) ? cloneArray(item) : item));
   }
 
-  // ai plays best move with minimax
-  function aiPlay() {
-    let copyGameboard = cloneArray(gameboard);
-    // console.table(copyGameboard);
-    // track best score - set it to worst possible score of infinity since we're minimising
-    let bestScore = Infinity;
-    let bestMove;
-    console.log(`bestMove is currently = ${bestMove}`);
-    // loop through board
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        // if spot is available
-        if (copyGameboard[i][j] === '') {
-          copyGameboard[i][j] = 'O';
-          let score = minimax(copyGameboard, 0, false);
-          console.log(score);
-          // copyGameboard[i][j] = '';
-          if (score < bestScore) {
-            bestScore = score;
-            console.log('new best move');
-            // BEST MOVE IS ONLY SET ONCE!!!!!!!!!! NEED TO BE SET ON EVERY BEST SCORE
-            bestMove = { i, j };
-            console.log(bestMove);
-          }
-        }
-      }
-    }
-
-    // play best move
-    console.log(bestMove);
-    gameboard[bestMove.i][bestMove.j] = 'O';
-    winner = '';
-    render();
-    // console.table(gameboard);
-    checkResult(gameboard);
-    getNextToPlay();
-  }
-
-  function minimax(board, depth, isMaximising) {
-    let scores = {
-      X: 1,
-      O: -1,
-      tie: 0,
-    };
-
-    let result = checkWinner(board);
-    // console.log(result);
-    if (result !== null) {
-      console.log(scores[result]);
-      return scores[result];
-    }
-
-    if (isMaximising) {
-      let bestScore = -Infinity;
-      for (let i = 0; i < 3; i++) {
-        for (let j = 0; j < 3; j++) {
-          if (board[i][j] === '') {
-            board[i][j] = 'X';
-            let score = minimax(board, depth + 1, false);
-            // board[i][j] = '';
-            bestScore = Math.max(score, bestScore);
-          }
-        }
-      }
-      console.log(bestScore);
-      return bestScore;
-    } else {
-      let bestScore = Infinity;
-      for (let i = 0; i < 3; i++) {
-        for (let j = 0; j < 3; j++) {
-          if (board[i][j] === '') {
-            board[i][j] = 'O';
-            let score = minimax(board, depth + 1, true);
-            // board[i][j] = '';
-            bestScore = Math.min(score, bestScore);
-            console.log(bestScore);
-          }
-        }
-      }
-      return bestScore;
-    }
-  }
-
-  // add check winner for minimax
+  // @@@@@@ check the result for minimax @@@@@@@@@@@@@@@@@@@@@@
   function checkWinner(board) {
     checkRows(board);
     checkColumns(board);
@@ -201,30 +151,6 @@ const game = (function () {
       return null;
     }
   }
-
-  // ai plays move in next available space
-  // function aiPlayNextAvailable() {
-  //   // is it better to break out of a nested for loop with labels or
-  //   // just return
-  //   exit_loops: for (let i = 0; i < 3; i++) {
-  //     for (let j = 0; j < 3; j++) {
-  //       if (gameboard[i][j] === '') {
-  //         gameboard[i][j] = 'O';
-  //         render();
-  //         console.table(gameboard);
-  //         checkResult(gameboard);
-  //         getNextToPlay();
-  //         return;
-  //         // break exit_loops;
-  //       }
-  //     }
-  //   }
-
-  //   // render();
-  //   // console.table(gameboard);
-  //   // checkResult(gameboard);
-  //   // getNextToPlay();
-  // }
 
   // get columns, rows and diagonals
   function checkRows(gameboard) {
@@ -304,3 +230,147 @@ const game = (function () {
 
   return {};
 })();
+
+/* Broken minimax functions
+
+
+// ai plays best move with minimax
+  function aiPlay() {
+    let copyGameboard = cloneArray(gameboard);
+    // console.table(copyGameboard);
+    // track best score - set it to worst possible score of infinity since we're minimising
+
+    
+    let bestScore = Infinity;
+    let bestMove;
+    console.log(`bestMove is currently = ${bestMove}`);
+    // loop through board
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        // if spot is available
+        if (copyGameboard[i][j] === '') {
+          console.log(`copyGameboard[${i}][${j}] === ''`);
+          copyGameboard[i][j] = 'O';
+          console.log(`enter minimax`);
+          let score = minimax(copyGameboard, 0, true);
+          copyGameboard[i][j] = '';
+          console.log(score);
+          if (score < bestScore) {
+            bestScore = score;
+            console.log('new best move');
+            // BEST MOVE IS ONLY SET ONCE!!!!!!!!!! NEED TO BE SET ON EVERY BEST SCORE
+            bestMove = { i, j };
+            console.log(bestMove);
+          }
+        }
+      }
+    }
+
+    // play best move
+    console.log(bestMove);
+    gameboard[bestMove.i][bestMove.j] = 'O';
+  
+
+    winner = '';
+    render();
+    // console.table(gameboard);
+    checkResult(gameboard);
+    getNextToPlay();
+  }
+
+  // doens't work!!!!!!!!
+  function minimax(board, depth, isMaximising) {
+    let scores = {
+      X: 1,
+      O: -1,
+      tie: 0,
+    };
+
+    let result = checkWinner(board);
+    // console.log(result);
+    if (result !== null) {
+      console.log(`return ${scores[result]}`);
+      return scores[result];
+    }
+
+    if (isMaximising) {
+      let bestScore = -Infinity;
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          if (board[i][j] === '') {
+            console.log(`copyGameboard[${i}][${j}] === ''`);
+            board[i][j] = 'X';
+            console.log(`enter minimax`);
+            let score = minimax(board, depth + 1, false);
+            board[i][j] = '';
+            bestScore = Math.max(score, bestScore);
+          }
+        }
+      }
+      console.log(`return ${bestScore}`);
+      return bestScore;
+    } else {
+      let bestScore = Infinity;
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          if (board[i][j] === '') {
+            console.log(`copyGameboard[${i}][${j}] === ''`);
+            board[i][j] = 'O';
+            console.log(`enter minimax`);
+            let score = minimax(board, depth + 1, true);
+            board[i][j] = '';
+            bestScore = Math.min(score, bestScore);
+            console.log(bestScore);
+          }
+        }
+      }
+      console.log(`return ${bestScore}`);
+      return bestScore;
+    }
+  }
+
+  // add check winner for minimax
+  function checkWinner(board) {
+    checkRows(board);
+    checkColumns(board);
+    checkDiagonals(board);
+
+    if (winner !== '') {
+      return winner.mark;
+    } else if (
+      winner === '' &&
+      board.map((arr) => arr.join('')).join('').length === 9
+    ) {
+      return 'tie';
+    } else {
+      return null;
+    }
+  }
+
+*/
+
+/* simple ai controlled moves - finds next available space to play*/
+
+// ai plays move in next available space
+// function aiPlayNextAvailable() {
+//   // is it better to break out of a nested for loop with labels or
+//   // just return
+//   exit_loops: for (let i = 0; i < 3; i++) {
+//     for (let j = 0; j < 3; j++) {
+//       if (gameboard[i][j] === '') {
+//         gameboard[i][j] = 'O';
+//         render();
+//         console.table(gameboard);
+//         checkResult(gameboard);
+//         getNextToPlay();
+//         return;
+//         // break exit_loops;
+//       }
+//     }
+//   }
+
+//   // render();
+//   // console.table(gameboard);
+//   // checkResult(gameboard);
+//   // getNextToPlay();
+// }
