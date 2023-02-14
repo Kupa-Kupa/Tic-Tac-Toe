@@ -4,6 +4,10 @@ https://www.theodinproject.com/lessons/node-path-javascript-tic-tac-toe
 
 [Live View](https://kupa-kupa.github.io/Tic-Tac-Toe/) - https://kupa-kupa.github.io/Tic-Tac-Toe/
 
+## Additional Things To Do:
+
+Implement computer opponent using minimax algorithm
+
 ## Learnt About:
 
 ### Change vs Input Event
