@@ -128,6 +128,7 @@ const game = (function () {
     grid.removeEventListener('click', playMove);
     grid.addEventListener('click', playMove);
     winner = '';
+    currentPlayer = player1;
   }
 
   return {};
