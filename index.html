@@ -9,6 +9,19 @@
     <script src="./scripts/app.js" defer></script>
   </head>
   <body>
+    <header><h1>Tic Tac Toe</h1></header>
+    <section class="player-info">
+      <div class="x-info">
+        <h2>X</h2>
+        <label for="x-name">Name:</label>
+        <input type="text" />
+      </div>
+      <div class="o-info">
+        <h2>O</h2>
+        <label for="o-name">Name:</label>
+        <input type="text" />
+      </div>
+    </section>
     <main>
       <section class="playing-grid">
         <div class="square-container">
@@ -23,8 +36,11 @@
           <div class="square" data-index="8"></div>
         </div>
       </section>
+    </main>
+    <section class="controls-container">
       <div class="result"></div>
       <button type="button" id="restart">Restart</button>
-    </main>
+    </section>
+    <footer>Made by Kupa</footer>
   </body>
 </html>
