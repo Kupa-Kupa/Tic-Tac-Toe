@@ -100,13 +100,14 @@ const game = (function () {
   function aiPlay() {
     // get copy of current board state
     let copyGameboard = cloneArray(gameboard);
-
+    let aiMove;
     // call minimax
-    minimax(copyGameboard, player2, 0);
+    aiMove = minimax(copyGameboard, player2, 0);
+    // aiMove = minimax(gameboard, player2, 0);
+    console.log(aiMove);
 
-    /*  set winner back to '' so that it doesn't end game for no reason 
-        based on what the minimax was looking at down the tree */
-    // winner = '';
+    // play ai move
+    gameboard[aiMove.i][aiMove.j] = 'O';
 
     // render the ai's move
     render();
@@ -121,17 +122,21 @@ const game = (function () {
   // find best available move with minimax algorithm
   function minimax(board, player, depth) {
     // 1) return value if terminal state is found
-    //check if there is a winner
-    if (checkWinner(board) === 'X') {
-      return { score: 10 };
-    } else if (checkWinner(board) === 'O') {
-      return { score: -10 };
-    } else if (checkWinner(board) === 'tie') {
+    //check what the current result is
+    let result = checkWinner(board);
+
+    if (result === 'X') {
+      return { score: 100 - depth };
+    } else if (result === 'O') {
+      return { score: -100 + depth };
+    } else if (result === 'tie') {
       return { score: 0 };
     }
 
     // 2) Loop through available spots on the board
     // get an array of available moves
+
+    /*
     let availableMoves = [];
     // check available squares and push them into array
     for (let i = 0; i < 3; i++) {
@@ -143,11 +148,45 @@ const game = (function () {
     }
 
     console.table(availableMoves);
+    */
 
     // 3) call the minimax function on each available spot recursively
     // array to collect information on each move in an object
     let moves = [];
 
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        if (board[i][j] === '') {
+          // create move object
+          let move = {};
+
+          // store move index in move object
+          move.i = `${i}`;
+          move.j = `${j}`;
+          move.index = `${i}${j}`;
+          console.log(move.index);
+
+          // play move at current free position
+          board[i][j] = player.mark;
+
+          // recursively call minimax and record the scores
+          if (player === player1) {
+            let result = minimax(board, player2, depth + 1);
+            move.score = result.score;
+          } else {
+            let result = minimax(board, player1, depth + 1);
+            move.score = result.score;
+          }
+
+          // reset square to empty
+          board[i][j] = '';
+
+          // push object to moves array
+          moves.push(move);
+        }
+      }
+    }
+    /*
     for (let i = 0; i < availableMoves.length; i++) {
       let move = {};
 
@@ -176,6 +215,7 @@ const game = (function () {
       // push object to moves array
       moves.push(move);
     }
+    */
 
     // 4) evaluate returning values from function calls
     let bestMove;
@@ -210,21 +250,58 @@ const game = (function () {
 
   // @@@@@@ check the result for minimax @@@@@@@@@@@@@@@@@@@@@@
   function checkWinner(board) {
-    checkRows(board);
-    checkColumns(board);
-    checkDiagonals(board);
+    let row1 = board[0].join('');
+    let row2 = board[1].join('');
+    let row3 = board[2].join('');
 
-    if (winner !== '') {
-      return winner.mark;
-    } else if (
-      winner === '' &&
-      board.map((arr) => arr.join('')).join('').length === 9
-    ) {
+    let col1 = board[0][0] + board[1][0] + board[2][0];
+    let col2 = board[0][1] + board[1][1] + board[2][1];
+    let col3 = board[0][2] + board[1][2] + board[2][2];
+
+    let diag1 = board[0][0] + board[1][1] + board[2][2];
+    let diag2 = board[2][0] + board[1][1] + board[0][2];
+
+    if (row1 === 'XXX' || row2 === 'XXX' || row3 === 'XXX') {
+      console.log(`row winner: X`);
+      return 'X';
+    } else if (row1 === 'OOO' || row2 === 'OOO' || row3 === 'OOO') {
+      console.log(`row winner: O`);
+      return 'O';
+    } else if (col1 === 'XXX' || col2 === 'XXX' || col3 === 'XXX') {
+      console.log(`column winner: X`);
+      return 'X';
+    } else if (col1 === 'OOO' || col2 === 'OOO' || col3 === 'OOO') {
+      console.log(`column winner: O`);
+      return 'O';
+    } else if (diag1 === 'XXX' || diag2 === 'XXX') {
+      console.log(`diagonal winner: X`);
+      return 'X';
+    } else if (diag1 === 'OOO' || diag2 === 'OOO') {
+      console.log(`diagonal winner: O`);
+      return 'O';
+    } else if (board.map((arr) => arr.join('')).join('').length === 9) {
       return 'tie';
     } else {
       return null;
     }
   }
+
+  /*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  */
 
   // get columns, rows and diagonals
   function checkRows(gameboard) {
