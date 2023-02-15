@@ -90,7 +90,10 @@ const game = (function () {
       checkResult(gameboard);
       getNextToPlay();
       //after player move if there is no winner then play ai move
-      if (winner === '') {
+      if (
+        winner === '' &&
+        gameboard.map((arr) => arr.join('')).join('').length !== 9
+      ) {
         aiPlay();
       }
     }
@@ -164,7 +167,7 @@ const game = (function () {
           move.i = `${i}`;
           move.j = `${j}`;
           move.index = `${i}${j}`;
-          console.log(move.index);
+          // console.log(move.index);
 
           // play move at current free position
           board[i][j] = player.mark;
@@ -261,23 +264,27 @@ const game = (function () {
     let diag1 = board[0][0] + board[1][1] + board[2][2];
     let diag2 = board[2][0] + board[1][1] + board[0][2];
 
+    /* algorithm was very slow for first move becuase it has to 
+    console log thousands of winning moves here. speed is fine when 
+    they are commented out */
+
     if (row1 === 'XXX' || row2 === 'XXX' || row3 === 'XXX') {
-      console.log(`row winner: X`);
+      // console.log(`row winner: X`);
       return 'X';
     } else if (row1 === 'OOO' || row2 === 'OOO' || row3 === 'OOO') {
-      console.log(`row winner: O`);
+      // console.log(`row winner: O`);
       return 'O';
     } else if (col1 === 'XXX' || col2 === 'XXX' || col3 === 'XXX') {
-      console.log(`column winner: X`);
+      // console.log(`column winner: X`);
       return 'X';
     } else if (col1 === 'OOO' || col2 === 'OOO' || col3 === 'OOO') {
-      console.log(`column winner: O`);
+      // console.log(`column winner: O`);
       return 'O';
     } else if (diag1 === 'XXX' || diag2 === 'XXX') {
-      console.log(`diagonal winner: X`);
+      // console.log(`diagonal winner: X`);
       return 'X';
     } else if (diag1 === 'OOO' || diag2 === 'OOO') {
-      console.log(`diagonal winner: O`);
+      // console.log(`diagonal winner: O`);
       return 'O';
     } else if (board.map((arr) => arr.join('')).join('').length === 9) {
       return 'tie';
