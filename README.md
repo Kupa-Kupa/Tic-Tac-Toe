@@ -4,10 +4,6 @@ https://www.theodinproject.com/lessons/node-path-javascript-tic-tac-toe
 
 [Live View](https://kupa-kupa.github.io/Tic-Tac-Toe/) - https://kupa-kupa.github.io/Tic-Tac-Toe/
 
-## Additional Things To Do:
-
-Implement computer opponent using minimax algorithm
-
 ## Learnt About:
 
 ### Change vs Input Event
@@ -25,3 +21,13 @@ https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event
 event.target.dataset.data-attribute
 
 https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/dataset
+
+### Minimax Algorithm
+
+#### What was I trying to do?
+
+Was trying to create an unbeatable tic tax toe ai bot.
+
+My implementation is based on the implementation from Ahmad Abdolsaheb's article.
+
+https://www.freecodecamp.org/news/how-to-make-your-tic-tac-toe-game-unbeatable-by-using-the-minimax-algorithm-9d690bad4b37
